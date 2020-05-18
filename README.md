@@ -1,2 +1,2 @@
 # PyOptFoil
-Python code for the optimisation of aerofoils over a range of flow conditions 
+Python code for the optimisation of aerofoils over multiple lift coefficient requirements
