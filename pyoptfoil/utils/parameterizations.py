@@ -18,7 +18,7 @@ class BezierCurves:
 
         Returns
         -------
-        b : cubic bezier point
+        b : cubic bezier points
         """
         b = p0 * (1 - u) ** 3 + 3 * p1 * u * (1 - u) ** 2 + 3 * p2 * u ** 2 * (1 - u) + p3 * u ** 3
         return b
