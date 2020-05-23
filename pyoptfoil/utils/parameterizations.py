@@ -92,10 +92,10 @@ class BP3333:
 
         r_c = list(filter(lambda i: rc_constraint_check(self.params, i), r_c))
 
-        if len(r_c) is not 1:
+        if len(r_c) is 0:
             self.constraint_violation = True
         else:
-            self.r_c = r_c[0]
+            self.r_c = max(r_c)
 
     def xy_lt(self):
 
@@ -144,7 +144,7 @@ class BP3333:
 
         x0 = 0
         x1 = self.r_c * math.tan(self.params['gamma_le']) ** -1
-        x2 = self.params['x_c'] - (2 * (self.r_c - self.params['y_c']) / (3 * self.params['k_c']))**0.5
+        x2 = self.params['x_c'] - (2 * (self.r_c - self.params['y_c']) / (3 * self.params['k_c'])) ** 0.5
         x3 = self.params['x_c']
 
         y0 = 0
@@ -162,7 +162,7 @@ class BP3333:
         """Calculates cubic bezier control points for the trailing edge camber curve"""
 
         x0 = self.params['x_c']
-        x1 = self.params['x_c'] + (2 * (self.r_c - self.params['y_c']) / (3 * self.params['k_c']))**0.5
+        x1 = self.params['x_c'] + (2 * (self.r_c - self.params['y_c']) / (3 * self.params['k_c'])) ** 0.5
         x2 = 1 + (self.params['z_te'] - self.r_c) * math.tan(self.params['alpha_te']) ** -1
         x3 = 1
 
