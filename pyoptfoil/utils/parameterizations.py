@@ -75,8 +75,6 @@ class BP3333:
         summand1 = 16 + 3 * self.params['k_c'] * (
                 math.tan(self.params['gamma_le']) ** -1 + math.tan(self.params['alpha_te']) ** -1) * (
                            1 + self.params['z_te'] * math.tan(self.params['alpha_te']) ** -1)
-        summand1 /= 3 * self.params['k_c'] * (
-                math.tan(self.params['gamma_le']) ** -1 + math.tan(self.params['alpha_te']) ** -1)
 
         summand2 = 6 * self.params['k_c'] * (
                 math.tan(self.params['gamma_le']) ** -1 + math.tan(self.params['alpha_te']) ** -1)
@@ -85,10 +83,16 @@ class BP3333:
                         'z_te'] * math.tan(self.params['alpha_te']) ** -1
         summand2 = np.array([-1, 1]) * 4 * (16 + summand2) ** 0.5
 
-        r_c = summand1 + summand2
+        r_c = (summand1 + summand2) / (3 * self.params['k_c'] * (
+                math.tan(self.params['gamma_le']) ** -1 + math.tan(self.params['alpha_te']) ** -1) ** 2)
 
         def rc_constraint_check(params, p):
-            return 0 < p < params['y_c']
+            retbool1 = 0 < p < params['y_c']
+            retbool2 = params['x_c'] - (2 * (p - params['y_c']) / (3 * params['k_c'])) ** 0.5 > p / math.tan(
+                params['gamma_le'])  # ensures that x is monotonically increasing
+            retbool3 = 1 + (params['z_te'] - p) * math.tan(params['alpha_te']) ** -1 > params['x_c'] + (
+                    2 * (p - params['y_c']) / (3 * params['k_c'])) ** 0.5  # ensures that x is monotonically increasing
+            return retbool1 and retbool2 and retbool3
 
         r_c = list(filter(lambda i: rc_constraint_check(self.params, i), r_c))
 
