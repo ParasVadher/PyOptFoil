@@ -1,29 +1,7 @@
 import numpy as np
 import math
 from scipy.optimize import fsolve
-
-
-class BezierCurves:
-    @staticmethod
-    def b3(u: np.ndarray, p0: float, p1: float, p2: float, p3: float):
-        """
-        Calculates cubic bezier curve.
-
-        Parameters
-        ----------
-        u : parameter 0 <= u <= 1.
-        p0 : bezier control point.
-        p1 : bezier control point.
-        p2 : bezier control point.
-        p3 : bezier control point.
-
-        Returns
-        -------
-        b : cubic bezier points.
-        """
-
-        b = p0 * (1 - u) ** 3 + 3 * p1 * u * (1 - u) ** 2 + 3 * p2 * u ** 2 * (1 - u) + p3 * u ** 3
-        return b
+from .bezier_curves import b3, db3
 
 
 class BP3333:
@@ -94,7 +72,8 @@ class BP3333:
                 params['gamma_le'])  # ensures that x is monotonically increasing
             retbool3 = 1 + (params['z_te'] - p) * math.tan(params['alpha_te']) ** -1 > params['x_c'] + (
                     2 * (p - params['y_c']) / (3 * params['k_c'])) ** 0.5  # ensures that x is monotonically increasing
-            return retbool1 and retbool2 and retbool3
+            retbool4 = np.isreal(p)
+            return retbool1 and retbool2 and retbool3 and retbool4
 
         r_c = list(filter(lambda i: rc_constraint_check(self.params, i), r_c))
 
@@ -117,9 +96,8 @@ class BP3333:
         y2 = self.params['y_t']
         y3 = self.params['y_t']
 
-        u = np.linspace(0, 1, 100)
-        x_lt = BezierCurves.b3(u, x0, x1, x2, x3)
-        y_lt = BezierCurves.b3(u, y0, y1, y2, y3)
+        x_lt = (x0, x1, x2, x3)
+        y_lt = (y0, y1, y2, y3)
 
         return x_lt, y_lt
 
@@ -130,7 +108,7 @@ class BP3333:
         x0 = self.params['x_t']
         x1 = 2 * self.params['x_t'] - self.r_t
         x2 = 1 + (self.params['dz_te'] - (
-                    3 * self.params['k_t'] * (self.params['x_t'] - self.r_t) ** 2 / 2 + self.params['y_t'])) \
+                3 * self.params['k_t'] * (self.params['x_t'] - self.r_t) ** 2 / 2 + self.params['y_t'])) \
              / math.tan(self.params['beta_te'])
         x3 = 1
 
@@ -139,9 +117,8 @@ class BP3333:
         y2 = 3 * self.params['k_t'] * (self.params['x_t'] - self.r_t) ** 2 / 2 + self.params['y_t']
         y3 = self.params['dz_te']
 
-        u = np.linspace(0, 1, 100)
-        x_tt = BezierCurves.b3(u, x0, x1, x2, x3)
-        y_tt = BezierCurves.b3(u, y0, y1, y2, y3)
+        x_tt = (x0, x1, x2, x3)
+        y_tt = (y0, y1, y2, y3)
 
         return x_tt, y_tt
 
@@ -159,9 +136,8 @@ class BP3333:
         y2 = self.params['y_c']
         y3 = self.params['y_c']
 
-        u = np.linspace(0, 1, 100)
-        x_lc = BezierCurves.b3(u, x0, x1, x2, x3)
-        y_lc = BezierCurves.b3(u, y0, y1, y2, y3)
+        x_lc = (x0, x1, x2, x3)
+        y_lc = (y0, y1, y2, y3)
 
         return x_lc, y_lc
 
@@ -178,8 +154,36 @@ class BP3333:
         y2 = self.r_c
         y3 = self.params['z_te']
 
-        u = np.linspace(0, 1, 100)
-        x_tc = BezierCurves.b3(u, x0, x1, x2, x3)
-        y_tc = BezierCurves.b3(u, y0, y1, y2, y3)
+        x_tc = (x0, x1, x2, x3)
+        y_tc = (y0, y1, y2, y3)
 
         return x_tc, y_tc
+
+    def xy(self):
+        """Calculates aerofoil x,y coordinates"""
+
+        x_lt, y_lt = self.xy_lt()
+        x_tt, y_tt = self.xy_tt()
+        x_lc, y_lc = self.xy_lc()
+        x_tc, y_tc = self.xy_tc()
+
+        u = np.linspace(0, 1, 100)  # bezier parameter u
+
+        x_t = np.concatenate((b3(u, *x_lt), b3(u, *x_tt)))
+        y_t = np.concatenate((b3(u, *y_lt), b3(u, *y_tt)))
+        x_c = np.concatenate((b3(u, *x_lc), b3(u, *x_tc)))
+        y_c = np.concatenate((b3(u, *y_lc), b3(u, *y_tc)))
+
+        dyc_du = np.concatenate((db3(u, *y_lc), db3(u, *y_tc)))
+        dxc_du = np.concatenate((db3(u, *x_lc), db3(u, *x_tc)))
+        dyc_dxc = dyc_du / dxc_du
+        theta = np.arctan(dyc_dxc)
+
+        y_t = np.interp(x_c, x_t, y_t)  # interpolating for thickness at camber x points
+
+        x_u = x_c - y_t / 2 * np.sin(theta)
+        x_l = x_c + y_t / 2 * np.sin(theta)
+        y_u = y_c + y_t / 2 * np.cos(theta)
+        y_l = y_c - y_t / 2 * np.cos(theta)
+
+        return x_u, y_u, x_l, y_l
