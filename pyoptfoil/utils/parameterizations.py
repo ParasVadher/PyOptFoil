@@ -58,18 +58,20 @@ class BP3333:
         r_t = fsolve(func, 0.15, (self.params['x_t'], self.params['y_t'], self.params['r_le'], self.params['k_t']))
 
         def rt_constraint_check(params, p):
-            min_exp = params['x_t'] - (-2 * params['y_t'] / (3 * params['k_t'])) ** 0.5
-            retbool = p > 0
-            retbool = retbool and p > min_exp
-            retbool = retbool and p < params['x_t']
-            return retbool
+            retbool1 = 0 < p < params['x_t']
+            retbool2 = p > params['x_t'] - (-2 * params['y_t'] / (3 * params['k_t'])) ** 0.5
+            retbool3 = 1 + (params['dz_te'] - (3 * params['k_t'] * (params['x_t'] - p) ** 2 / 2 + params['y_t'])) \
+                       / math.tan(params['beta_te']) > 2 * params[
+                           'x_t'] - p  # ensures that x is monotonically increasing
+
+            return retbool1 and retbool2 and retbool3
 
         r_t = list(filter(lambda i: rt_constraint_check(self.params, i), r_t))
 
         if len(r_t) is 0:
             self.constraint_violation = True
         else:
-            self.r_t = np.sort(r_t)[0]
+            self.r_t = min(r_t)
 
     def _rc(self):
         summand1 = 16 + 3 * self.params['k_c'] * (
@@ -111,9 +113,9 @@ class BP3333:
         x3 = self.params['x_t']
 
         y0 = 0
+        y1 = 3 * self.params['k_t'] * (self.params['x_t'] - self.r_t) ** 2 / 2 + self.params['y_t']
         y2 = self.params['y_t']
         y3 = self.params['y_t']
-        y1 = 3 * self.params['k_t'] * (x3 - x2) ** 2 / 2 + y2
 
         u = np.linspace(0, 1, 100)
         x_lt = BezierCurves.b3(u, x0, x1, x2, x3)
@@ -126,14 +128,15 @@ class BP3333:
         """Calculates cubic bezier control points for the trailing edge thickness curve"""
 
         x0 = self.params['x_t']
-        x1 = 2 * x0 - self.r_t
-        x2 = 1 + (self.params['dz_te'] - (3 * self.params['k_t'] * (x0 - self.r_t) ** 2 / 2 + self.params['y_t'])) \
+        x1 = 2 * self.params['x_t'] - self.r_t
+        x2 = 1 + (self.params['dz_te'] - (
+                    3 * self.params['k_t'] * (self.params['x_t'] - self.r_t) ** 2 / 2 + self.params['y_t'])) \
              / math.tan(self.params['beta_te'])
         x3 = 1
 
         y0 = self.params['y_t']
-        y1 = y0
-        y2 = 3 * self.params['k_t'] * (x0 - self.r_t) ** 2 / 2 + y0
+        y1 = self.params['y_t']
+        y2 = 3 * self.params['k_t'] * (self.params['x_t'] - self.r_t) ** 2 / 2 + self.params['y_t']
         y3 = self.params['dz_te']
 
         u = np.linspace(0, 1, 100)
@@ -154,7 +157,7 @@ class BP3333:
         y0 = 0
         y1 = self.r_c
         y2 = self.params['y_c']
-        y3 = y2
+        y3 = self.params['y_c']
 
         u = np.linspace(0, 1, 100)
         x_lc = BezierCurves.b3(u, x0, x1, x2, x3)
@@ -171,7 +174,7 @@ class BP3333:
         x3 = 1
 
         y0 = self.params['y_c']
-        y1 = y0
+        y1 = self.params['y_c']
         y2 = self.r_c
         y3 = self.params['z_te']
 
