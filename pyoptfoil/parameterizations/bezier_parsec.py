@@ -8,7 +8,7 @@ class BP3333:
     def __init__(self, name: str, params: dict):
 
         """
-        Bezier-PARSEC 3333 aerofoil parameterization class
+        Bezier-PARSEC 3333 aerofoil parameterization class.
 
         Parameters
         ----------
@@ -25,7 +25,7 @@ class BP3333:
         self._rc()
 
     def _rt(self):
-        def func(r_t, x_t, y_t, r_le, k_t):
+        def quartic_func(r_t, x_t, y_t, r_le, k_t):
             expr = 27 * k_t ** 2 * r_t ** 4 / 4
             expr -= 27 * k_t ** 2 * x_t * r_t ** 3
             expr += (9 * k_t * y_t + 81 * k_t ** 2 * x_t ** 2 / 2) * r_t ** 2
@@ -33,7 +33,7 @@ class BP3333:
             expr += 3 * y_t ** 2 + 9 * k_t * x_t ** 2 * y_t + 27 * k_t ** 2 * x_t ** 4 / 4
             return expr
 
-        r_t = fsolve(func, 0.15, (self.params['x_t'], self.params['y_t'], self.params['r_le'], self.params['k_t']))
+        r_t = fsolve(quartic_func, 0.15, (self.params['x_t'], self.params['y_t'], self.params['r_le'], self.params['k_t']))
 
         def rt_constraint_check(params, p):
             retbool1 = 0 < p < params['x_t']
