@@ -17,7 +17,7 @@ class DE:
         self.population = []
         self.best_fitness_history = []
 
-        bounds_arr = np.array(self.bounds.values())
+        bounds_arr = np.array(list(self.bounds.values()))  # TODO make this acceptable for tuples
         self.lb = bounds_arr[:, 0]
         self.ub = bounds_arr[:, 1]
 
@@ -55,13 +55,20 @@ class DE:
         x1 = self.population[random_index[0]]
         x2 = self.population[random_index[1]]
 
-        v_donor = np.array(x0.position.values())
-        v_donor += self.f * (np.array(self.best_individual.position.values()) - v_donor)
-        v_donor += self.f * (np.array(x1.position.values()) - np.array(x2.position.values()))
+        v_donor = np.fromiter(x0.position.values(), float)
+        v_donor += self.f * (np.fromiter(self.best_individual.position.values(), float) - v_donor)
+        v_donor += self.f * (np.fromiter(x1.position.values(), float) - np.fromiter(x2.position.values(), float))
+
+        for i in range(len(v_donor)):
+            if v_donor[i] < self.lb[i]:
+                v_donor[i] = self.lb[i]
+            elif v_donor[i] > self.ub[i]:
+                v_donor[i] = self.ub[i]
+
         return v_donor
 
     def crossover(self, idx, v_donor):
-        v_trial = self.population[idx]
+        v_trial = copy.deepcopy(list(self.population[idx].position.values()))
         for k in range(len(v_donor)):
             if np.random.random() < self.cr:
                 v_trial[k] = v_donor[k]
