@@ -15,7 +15,8 @@ class DE:
 
         self.best_individual = None
         self.population = []
-        self.best_fitness_history = []
+        self.best_fitness_history = [None]
+        self.best_individual_history = [None]
 
         bounds_arr = np.array(list(self.bounds.values()))  # TODO make this acceptable for tuples
         self.lb = bounds_arr[:, 0]
@@ -45,7 +46,8 @@ class DE:
             individual.fitness = func(individual)
             if self.best_individual is None or individual.fitness > self.best_individual.fitness:
                 self.best_individual = copy.deepcopy(individual)
-                self.best_fitness_history.append(self.best_individual.fitness)
+                self.best_fitness_history[0] = self.best_individual.fitness
+                self.best_individual_history[0] = self.best_individual
 
     def mutate(self, idx):
         pot_index = [i for i in range(self.pop_size) if i != idx]
@@ -104,3 +106,4 @@ class DE:
                     self.best_individual = copy.deepcopy(self.population[idx])
 
             self.best_fitness_history.append(self.best_individual.fitness)
+            self.best_individual_history.append(self.best_individual)
