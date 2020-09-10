@@ -96,7 +96,7 @@ class DE:
         self.initialise_population()
         self.evaluate_population(func)
 
-        for gen in range(self.n_generations):
+        for gen in range(self.n_generations-1):
             for idx in range(self.pop_size):
                 v_donor = self.mutate(idx)
                 v_trial = self.crossover(idx, v_donor)
