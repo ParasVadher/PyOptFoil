@@ -1,5 +1,10 @@
 import subprocess as sp
 import numpy as np
+from ..aerofoil import Aerofoil
+
+
+def write_dat(aerofoil: Aerofoil):
+    pass
 
 
 def run_xfoil(xfoil_path: str, datfile_path: str, alfas: tuple, re: float, m: float, itermax: int):
