@@ -15,13 +15,10 @@ def write_dat(aerofoil: Aerofoil):
 
 
 def run_xfoil(xfoil_path: str, datfile_path: str, alfas: tuple, re: float, m: float, itermax: int):
-    inputs = ['load', datfile_path, 'pane', 'oper', 'v', str(re), 'm', str(m), 'pacc', 'xfoil.out', ' ', 'iter',
-              str(itermax), 'aseq',
-              str(alfas[0]), str(alfas[1]),
-              str(alfas[2]), ' ', 'quit']
+    inputs = ['plop', 'g', '', 'load', datfile_path, 'pane', 'oper', 'v', str(re), 'm', str(m), 'pacc',
+              'xfoil.out', ' ', 'iter', str(itermax), 'aseq', str(alfas[0]), str(alfas[1]), str(alfas[2]), ' ', 'quit']
 
-    xfoil_proc = sp.run(xfoil_path, input='\n'.join(inputs), capture_output=True, text=True, shell=True)
-    print(xfoil_proc.stderr)
+    xfoil_proc = sp.run(xfoil_path, input='\n'.join(inputs), capture_output=True, text=True, timeout=10)
 
     return xfoil_proc
 
