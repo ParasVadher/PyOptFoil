@@ -4,6 +4,7 @@ import copy
 import random
 import sys
 
+
 class DE:
     def __init__(self, bounds: dict, pop_size: int, n_generations: int, param_method: str, f: float, cr: float):
         self.bounds = bounds
@@ -45,15 +46,13 @@ class DE:
         print('Evaluating Gen 0')
 
         for individual in self.population:
-            sys.stdout.write(individual.name)
+            sys.stdout.write(individual.name + '\r')
 
             individual.fitness = func(individual)
             if self.best_individual is None or individual.fitness > self.best_individual.fitness:
                 self.best_individual = copy.deepcopy(individual)
                 self.best_fitness_history[0] = self.best_individual.fitness
                 self.best_individual_history[0] = self.best_individual
-
-            sys.stdout.write(''.join(['\b']*25))
 
     def mutate(self, idx):
         pot_index = [i for i in range(self.pop_size) if i != idx]
@@ -102,19 +101,17 @@ class DE:
         self.initialise_population()
         self.evaluate_population(func)
 
-        for gen in range(self.n_generations-1):
-            print('Evaluating Gen {}:'.format(gen+1))
+        for gen in range(self.n_generations - 1):
+            print('Evaluating Gen {}'.format(gen + 1))
 
             for idx in range(self.pop_size):
-                sys.stdout.write(self.population[idx].name)
+                sys.stdout.write(self.population[idx].name + '\r')
                 v_donor = self.mutate(idx)
                 v_trial = self.crossover(idx, v_donor)
                 replaced = self.selection(idx, v_trial, func)
 
                 if replaced and self.population[idx].fitness > self.best_individual.fitness:
                     self.best_individual = copy.deepcopy(self.population[idx])
-
-                sys.stdout.write(''.join(['\b'] * 25))
 
             self.best_fitness_history.append(self.best_individual.fitness)
             self.best_individual_history.append(self.best_individual)
