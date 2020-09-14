@@ -36,7 +36,7 @@ def run_xfoil(xfoil_path: str, datfile_path: str, alfas: tuple, re: float, m: fl
     datfile_path : str
         Path to the aerofoil coordinate file.
     alfas : tuple
-        Incidence range. (alpha_start, alpha_stop, alpha_increment)
+        Incidence range (alpha_start, alpha_stop, alpha_increment).
     re : float
         Reynolds number.
     m: float
@@ -54,6 +54,7 @@ def run_xfoil(xfoil_path: str, datfile_path: str, alfas: tuple, re: float, m: fl
 
 
 def read_out():
+
     """
     Reads XFOIL polar save file.
 
@@ -61,6 +62,7 @@ def read_out():
     -------
     Numpy array containing angle of attack, lift coefficient and drag coefficient data.
     """
+
     with open('xfoil.out', 'r') as f:
         lines = f.readlines()
 

@@ -17,6 +17,7 @@ class Aerofoil:
             Contains parameters defining location in search space. To be used with parametrisation method to determine
         aerofoil coordinates.
         """
+
         self.name = name
         self.position = params
 

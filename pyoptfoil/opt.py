@@ -46,5 +46,28 @@ def _drag_reward(cl_des: float, re: float, m: float, alpha_range: tuple, xfoil_p
 
 def opt(optimizer: DE, cl_des: float, re: float, m: float, alpha_range: tuple, xfoil_path: str = 'xfoil.exe',
         itermax: int = 100):
+
+    """
+    Runs optimisation algorithm to obtain parameters which minimise drag at a given lift coefficient, Reynolds number
+    and Mach number within a given incidence range.
+
+    Parameters
+    ----------
+    optimizer : DE
+        Optimisation algorithm object.
+    cl_des : float
+        Desired lift coefficient.
+    re : float
+        Reynolds number.
+    m : float
+        Mach number.
+    alpha_range : tuple
+        Incidence range (alpha_start, alpha_stop, alpha_increment).
+    xfoil_path : str
+        Path to XFOIL executable file.
+    itermax : int
+        XFOIL viscous solution iteration limit.
+    """
     def func(a): return _drag_reward(cl_des, re, m, alpha_range, xfoil_path, itermax, a)
+
     optimizer.optimize(func)

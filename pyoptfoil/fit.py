@@ -12,6 +12,7 @@ def _aerofoil_similarity(x_u, y_u, x_l, y_l, aerofoil):
 
 
 def fit(optimizer: DE, x_u: np.ndarray, y_u: np.ndarray, x_l: np.ndarray, y_l: np.ndarray):
+
     """
     Runs optimisation algorithm to obtain parameters which best fit the given target aerofoil coordinates.
 
@@ -28,5 +29,6 @@ def fit(optimizer: DE, x_u: np.ndarray, y_u: np.ndarray, x_l: np.ndarray, y_l: n
     y_l : numpy array
         Lower surface y coordinates of target aerofoil.
     """
+
     def func(a): return _aerofoil_similarity(x_u, y_u, x_l, y_l, a)
     optimizer.optimize(func)
