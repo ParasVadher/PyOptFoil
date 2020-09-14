@@ -8,14 +8,13 @@ class BP3333:
     def __init__(self, name: str, params: dict):
 
         """
-        Bezier-PARSEC 3333 aerofoil parameterization class.
+        Bezier-PARSEC 3333 aerofoil parametrisation class.
 
         Parameters
         ----------
         name : Geometry name.
         params : Dict containing BP3333 parameters. Should contain the following keys: 'x_t', 'y_t', 'r_le', 'k_t',
         'beta_te' , 'dz_te', 'gamma_le', 'x_c', 'y_c', 'k_c', 'alpha_te', 'z_te'.
-
         """
 
         self.name = name

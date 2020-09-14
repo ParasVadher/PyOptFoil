@@ -4,6 +4,19 @@ from .parameterizations.bezier_parsec import BP3333
 class Aerofoil:
     def __init__(self, name: str, param_method: str, params: dict):
 
+        """
+        Class containing information about an individual aerofoil.
+
+        Parameters
+        ----------
+        name : str
+            Name of individual.
+        param_method : str
+            Parametrisation method.
+        params : dict
+            Contains parameters defining location in search space. To be used with parametrisation method to determine
+        aerofoil coordinates.
+        """
         self.name = name
         self.position = params
 

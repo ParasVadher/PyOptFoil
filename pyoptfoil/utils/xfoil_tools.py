@@ -4,6 +4,15 @@ from ..aerofoil import Aerofoil
 
 
 def write_dat(aerofoil: Aerofoil):
+
+    """
+    Creates XFOIL labeled coordinate file for given aerofoil.
+    Parameters
+    ----------
+    aerofoil : Aerofoil
+        Aerofoil object for which to generate coordinate file
+    """
+
     x = np.concatenate((np.flip(aerofoil.x_l), aerofoil.x_u[1:]))
     y = np.concatenate((np.flip(aerofoil.y_l), aerofoil.y_u[1:]))
 
@@ -15,6 +24,27 @@ def write_dat(aerofoil: Aerofoil):
 
 
 def run_xfoil(xfoil_path: str, datfile_path: str, alfas: tuple, re: float, m: float, itermax: int):
+
+    """
+    Runs XFOIL. Commands turn off graphics, load coordinate file, set panelling, and run incidence sweep at requested
+    conditions.
+
+    Parameters
+    ----------
+    xfoil_path : str
+        Path to the XFOIL executable file.
+    datfile_path : str
+        Path to the aerofoil coordinate file.
+    alfas : tuple
+        Incidence range. (alpha_start, alpha_stop, alpha_increment)
+    re : float
+        Reynolds number.
+    m: float
+        Mach number
+    itermax : int
+        XFOIL viscous solution iteration limit.
+    """
+
     inputs = ['plop', 'g', '', 'load', datfile_path, 'pane', 'oper', 'v', str(re), 'm', str(m), 'pacc',
               'xfoil.out', ' ', 'iter', str(itermax), 'aseq', str(alfas[0]), str(alfas[1]), str(alfas[2]), ' ', 'quit']
 
@@ -24,6 +54,13 @@ def run_xfoil(xfoil_path: str, datfile_path: str, alfas: tuple, re: float, m: fl
 
 
 def read_out():
+    """
+    Reads XFOIL polar save file.
+
+    Returns
+    -------
+    Numpy array containing angle of attack, lift coefficient and drag coefficient data.
+    """
     with open('xfoil.out', 'r') as f:
         lines = f.readlines()
 
