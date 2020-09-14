@@ -68,6 +68,7 @@ def opt(optimizer: DE, cl_des: float, re: float, m: float, alpha_range: tuple, x
     itermax : int
         XFOIL viscous solution iteration limit.
     """
+    
     def func(a): return _drag_reward(cl_des, re, m, alpha_range, xfoil_path, itermax, a)
 
     optimizer.optimize(func)
