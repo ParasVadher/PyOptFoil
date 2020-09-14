@@ -7,6 +7,26 @@ import sys
 
 class DE:
     def __init__(self, bounds: dict, pop_size: int, n_generations: int, param_method: str, f: float, cr: float):
+
+        """
+        DE (Differential Evolution) class.
+
+        Parameters
+        ----------
+        bounds : dict
+            Lower and upper bounds of parameters in the search space.
+        pop_size : int
+            Population size
+        n_generations : int
+            Total number of generations in the optimisation process.
+        param_method : str
+            Parametrisation method.
+        f : float
+            Differential weight/mutation factor
+        cr : float
+            Crossover probability
+        """
+
         self.bounds = bounds
         self.pop_size = pop_size
         self.n_generations = n_generations
@@ -19,11 +39,14 @@ class DE:
         self.best_fitness_history = [None]
         self.best_individual_history = [None]
 
-        bounds_arr = np.array(list(self.bounds.values()))  # TODO make this acceptable for tuples
+        bounds_arr = np.array(list(self.bounds.values()))
         self.lb = bounds_arr[:, 0]
         self.ub = bounds_arr[:, 1]
 
     def generate_individual(self, name):
+
+        """Generates an individual Aerofoil object with parameters randomly selected from given bounds."""
+
         params_values = np.random.uniform(self.lb, self.ub)
         params = dict(zip(self.bounds.keys(), params_values))
 
@@ -32,6 +55,9 @@ class DE:
         return individual
 
     def initialise_population(self):
+
+        """Generates the initial population."""
+
         for i in range(self.pop_size):
             name = 'Population Member No. ' + str(i)
 
@@ -43,6 +69,9 @@ class DE:
             self.population.append(individual)
 
     def evaluate_population(self, func):
+
+        """Evaluates fitness of every individual in the population with the given fitness function."""
+
         print('Evaluating Gen 0')
 
         for individual in self.population:
@@ -55,6 +84,9 @@ class DE:
                 self.best_individual_history[0] = self.best_individual
 
     def mutate(self, idx):
+
+        """Mutation step of the differential evolution algorithm. (DE/rand-to-best/1 scheme)."""
+
         pot_index = [i for i in range(self.pop_size) if i != idx]
         random_index = random.sample(pot_index, 2)
 
@@ -75,6 +107,9 @@ class DE:
         return v_donor
 
     def crossover(self, idx, v_donor):
+
+        """Crossover step of the differential evolution algorithm (binary crossover)."""
+
         v_trial = copy.deepcopy(list(self.population[idx].position.values()))
         for k in range(len(v_donor)):
             if np.random.random() < self.cr:
@@ -83,6 +118,9 @@ class DE:
         return v_trial
 
     def selection(self, idx, v_trial, func):
+
+        """Selection step of the differential evolution algorithm."""
+
         target_individual = self.population[idx]
 
         trial_params = dict(zip(self.bounds.keys(), v_trial))
@@ -98,6 +136,15 @@ class DE:
         return replaced
 
     def optimize(self, func):
+        """
+        Runs the entire optimisation process with the given fitness function.
+
+        Parameters
+        ----------
+        func : function
+            Function used for evaluating fitness.
+        """
+
         self.initialise_population()
         self.evaluate_population(func)
 
