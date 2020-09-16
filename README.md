@@ -5,7 +5,7 @@ The code uses the Bezier-Parsec 3333 method for parameterizing aerofoil shapes w
 More options for parameterization method and optimization algorithm to come with future updates. 
 
 ## Usage
-The code below demostrates usage of PyOptFoil to obtain an aerofoil which minimizes drag at a desired lift coefficient of 0.6 and Reynolds number of 500,000 within the incidence range [-1,5]. 
+The code below demostrates usage of PyOptFoil to obtain an aerofoil which minimizes drag at a desired lift coefficient of 0.6 and Reynolds number of 500,000 within the incidence range [-1°,5°]. 
 
 ```python
 from pyoptfoil.opt import opt
