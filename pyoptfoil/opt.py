@@ -64,11 +64,11 @@ def opt(optimizer: DE, cl_des: float, re: float, m: float, alpha_range: tuple, x
     alpha_range : tuple
         Incidence range (alpha_start, alpha_stop, alpha_increment).
     xfoil_path : str
-        Path to XFOIL executable file.
+        Path of XFOIL executable file.
     itermax : int
         XFOIL viscous solution iteration limit.
     """
-    
+
     def func(a): return _drag_reward(cl_des, re, m, alpha_range, xfoil_path, itermax, a)
 
     optimizer.optimize(func)

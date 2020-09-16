@@ -14,7 +14,8 @@ class DE:
         Parameters
         ----------
         bounds : dict
-            Lower and upper bounds of parameters in the search space.
+            Lower and upper bounds of parameters in the search space. View docstring of relevant parametrization class
+            for required keys.
         pop_size : int
             Population size
         n_generations : int

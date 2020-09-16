@@ -15,7 +15,7 @@ class Aerofoil:
             Parametrisation method.
         params : dict
             Contains parameters defining location in search space. To be used with parametrisation method to determine
-        aerofoil coordinates.
+            aerofoil coordinates.
         """
 
         self.name = name
